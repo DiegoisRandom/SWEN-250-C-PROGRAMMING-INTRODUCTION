@@ -1,0 +1,460 @@
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+STRUCTS + TYPEDEF + MAKEFILES
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — WHAT A STRUCT IS
+=====================================================
+
+Definition:
+A struct is a way to group multiple variables together into one unit. 
+
+These variables can be different types.
+
+This is called:
+    heterogeneous data
+
+Example struct:
+
+    #define MAXNAME (20)
+
+    struct person {
+        char name[MAXNAME+1];
+        int age;
+        double income;
+    };
+
+This creates a custom data type called:
+
+    struct person
+
+
+Mental Model:
+
+A struct is like a form.
+
+Person Form:
+------------
+Name: ______
+Age: ______
+Income: ______
+
+All fields belong together.
+
+
+
+=====================================================
+SECTION 2 — WHY STRUCTS EXIST
+=====================================================
+
+Without structs, you'd store data separately:
+
+    char name[21];
+    int age;
+    double income;
+
+Problem:
+These variables are unrelated in code.
+
+Struct groups them into one logical object.
+
+So instead of:
+
+    name
+    age
+    income
+
+You can say:
+
+    person
+
+
+
+=====================================================
+SECTION 3 — DECLARING STRUCT VARIABLES
+=====================================================
+
+Declaring struct type:
+
+    struct person {
+        char name[21];
+        int age;
+        double income;
+    };
+
+Creating variables:
+
+    struct person mike, pete;
+
+Memory is allocated for each struct variable. 
+
+
+
+=====================================================
+SECTION 4 — ACCESSING STRUCT FIELDS
+=====================================================
+
+Use DOT operator:
+
+    pete.age = 25;
+    mike.income = 45000;
+
+Field syntax:
+
+    variable.field
+
+Example:
+
+    pete.age = chris.age + 3;
+
+
+
+=====================================================
+SECTION 5 — COPYING STRUCTS
+=====================================================
+
+You can copy structs directly:
+
+    mike = pete;
+
+This copies ALL fields automatically.
+
+Equivalent to copying each field individually.
+
+
+
+=====================================================
+SECTION 6 — PASSING STRUCTS TO FUNCTIONS
+=====================================================
+
+Structs are passed BY VALUE. 
+
+Meaning:
+
+A copy of the struct is passed.
+
+So changes inside function do NOT affect original.
+
+
+-----------------------------------------------------
+Wrong Example
+-----------------------------------------------------
+
+void give_raise(struct person p, double pct)
+{
+    p.income *= (1 + pct/100);
+}
+
+give_raise(mike, 10.0);
+
+This does NOT change mike.
+
+Why?
+
+Because p is a COPY.
+
+
+
+-----------------------------------------------------
+Correct Version
+-----------------------------------------------------
+
+struct person give_raise(struct person p, double pct)
+{
+    p.income *= (1 + pct/100);
+    return p;
+}
+
+mike = give_raise(mike, 10.0);
+
+Now it works because we return updated copy. 
+
+
+
+=====================================================
+SECTION 7 — TYPEDEF (CUSTOM TYPE NAMES)
+=====================================================
+
+typedef creates a new name for a type. 
+
+Example:
+
+    typedef double price_t;
+    typedef double weight_t;
+
+Now you can write:
+
+    price_t cost;
+    weight_t mass;
+
+Both are doubles, but names clarify meaning.
+
+Mental model:
+
+typedef = nickname for a type.
+
+
+
+=====================================================
+SECTION 8 — WHY TYPEDEF IS USEFUL
+=====================================================
+
+Without typedef:
+
+    double price;
+    double weight;
+
+Confusing — both same type.
+
+With typedef:
+
+    price_t price;
+    weight_t weight;
+
+Now code explains itself.
+
+
+
+=====================================================
+SECTION 9 — TYPEDEF FOR ARRAYS
+=====================================================
+
+Example:
+
+    #define MAXSTR (100)
+    typedef char long_string_t[MAXSTR+1];
+
+Now you can write:
+
+    long_string_t line;
+    long_string_t buffer;
+
+Instead of:
+
+    char line[101];
+    char buffer[101];
+
+Cleaner + safer. 
+
+
+
+=====================================================
+SECTION 10 — TYPEDEF FOR STRUCTS
+=====================================================
+
+Instead of:
+
+    struct point { ... };
+
+You can write:
+
+    typedef struct {
+        char label[101];  //name for the point
+        double x;  // xcoordinate
+        double y;  //ycoordinate
+    } point_t;        // pick a name that suggests it is a struct
+
+Then create variables like:
+
+    point_t origin;
+    point_t focus;
+
+Much shorter. 
+
+
+
+=====================================================
+SECTION 11 — WHY MAKEFILES EXIST
+=====================================================
+
+Problem:
+
+Programs often have MANY files. 
+Example project:
+
+    main.c
+    util.c
+    calc.c
+    io.c
+
+If you recompile everything every time:
+
+It wastes time.
+
+
+
+=====================================================
+SECTION 12 — WHAT MAKE DOES
+=====================================================
+
+make automatically rebuilds only files that changed. 
+
+So instead of rebuilding whole project,
+it rebuilds only what is necessary.
+
+
+
+=====================================================
+SECTION 13 — DEPENDENCIES
+=====================================================
+
+Definition:
+
+File A depends on File B if changes in B affect A. 
+
+Examples:
+
+object file depends on source file
+program depends on object files
+source file depends on header file
+
+A change to the source makes the object file incorrect.
+
+=====================================================
+SECTION 14 — MAKEFILE RULE FORMAT
+=====================================================
+
+Basic rule:
+
+    target: dependency1 dependency2
+        command
+
+Example:
+
+    main.o: main.c util.h calc.h
+        gcc -c main.c
+
+Meaning:
+
+Recompile main.o if any dependency changed.
+
+
+
+=====================================================
+SECTION 15 — HOW MAKE DECIDES TO REBUILD
+=====================================================
+
+A file is up-to-date if:
+
+1) it exists
+2) it is newer than all dependencies 
+
+If not → rebuild it.
+
+
+
+=====================================================
+SECTION 16 — FULL MAKEFILE EXAMPLE
+=====================================================
+
+abc: main.o util.o calc.o io.o
+    gcc -o abc main.o util.o calc.o io.o
+
+main.o: main.c util.h calc.h io.h
+    gcc -c main.c
+
+util.o: util.c util.h io.h
+    gcc -c util.c
+
+calc.o: calc.c calc.h
+    gcc -c calc.c
+
+io.o: io.c io.h
+    gcc -c io.c
+
+
+
+=====================================================
+SECTION 17 — MAKE COMMANDS
+=====================================================
+
+make
+→ builds default target (first rule) 
+
+make abc
+→ builds only abc
+
+make main.o
+→ builds only main.o
+
+
+
+=====================================================
+SECTION 18 — SPECIAL TARGET: CLEAN
+=====================================================
+
+Example:
+
+    clean:
+        rm -f *.o abc
+
+Running:
+
+    make clean
+
+Deletes compiled files. 
+
+
+
+=====================================================
+SECTION 19 — CRITICAL CONCEPT SUMMARY
+=====================================================
+
+STRUCTS
+- group related variables
+- fields accessed with dot
+- passed by value
+
+TYPEDEF
+- creates new type names
+- improves readability
+- often ends with _t
+
+MAKEFILES
+- automate compilation
+- rebuild only changed files
+- track dependencies
+
+
+
+=====================================================
+SECTION 20 — COMMON BEGINNER MISTAKES
+=====================================================
+
+Mistake: expecting struct changes inside function to persist
+Cause: structs passed by value
+
+Mistake: forgetting dot operator
+Wrong:
+    person age
+
+Correct:
+    person.age
+
+Mistake: not using typedef for complex types
+Leads to messy code
+
+Mistake: recompiling everything manually
+Instead → use make
+
+
+
+=====================================================
+FINAL CORE UNDERSTANDING
+=====================================================
+
+If you understand these ideas, you understand this entire lesson:
+
+Struct = grouped variables
+Typedef = type nickname
+Make = automatic compiler manager
+
+Everything else is just syntax.
+
+
+=====================================================
+END NOTES
+=====================================================

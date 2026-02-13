@@ -1,0 +1,269 @@
+==============================
+SWEN 250 — C PROGRAMMING NOTES
+Introduction to C (Coding Only)
+==============================
+
+
+--------------------------------
+1. COMPILED VS INTERPRETED
+--------------------------------
+
+Compiled Language (C)
+- Code is translated into a real executable file before running
+- Runs directly on CPU
+- Faster execution
+
+Interpreted / Bytecode Languages (Java, C#, Python)
+- Code is translated into intermediate form
+- Needs runtime environment to run
+
+Mental Model:
+Compiled = cook food first, then eat
+
+Interpreted = You prep the ingredients into a meal kit (bytecode)
+Then you need a kitchen + chef (runtime) to actually cook/run it.
+Cook while eating
+
+So C usually feels more "close to the machine" because it becomes something
+the CPU runs directly.
+
+
+--------------------------------
+2. HOW C COMPILATION WORKS
+--------------------------------
+
+When you run:
+
+gcc -o program main.c
+
+The following steps happen:
+
+STEP 1 — Preprocessor
+- Handles #include and #define
+- Replaces text before compilation
+
+STEP 2 — Parser
+- Checks syntax (grammar of code)
+- Detects missing semicolons, brackets, etc.
+
+STEP 3 — Compiler
+- Converts C code into lower-level instructions
+
+STEP 4 — Assembler
+- Converts instructions into machine code (.o files)
+
+STEP 5 — Linker
+- Combines all .o files + libraries
+- Produces final executable
+
+Simple Summary:
+Source Code → Object Files → Executable
+
+
+--------------------------------
+3. MULTIPLE FILE PROGRAMS
+--------------------------------
+
+.c file = implementation (real code)
+.h file = header (function declarations)
+
+Think:
+.h = "what exists"
+.c = "how it works"
+
+
+--------------------------------
+4. PROGRAM START POINT
+--------------------------------
+
+Every C program begins at:
+
+int main(void) {
+    return 0;
+}
+
+main() is always the first function executed.
+
+return 0 means:
+Program finished successfully.
+
+
+--------------------------------
+5. INPUT AND OUTPUT STREAMS
+--------------------------------
+
+stdin  = standard input  (keyboard by default)
+stdout = standard output (screen by default)
+
+Examples:
+getchar() reads from stdin
+printf() prints to stdout
+
+
+--------------------------------
+6. PRINTF FORMAT SPECIFIERS
+--------------------------------
+
+%d = integer
+%f = decimal number
+%e = scientific notation
+%s = string
+%c = character
+%x = hexadecimal
+
+Example:
+
+int i = 5;
+printf("Value = %d\n", i);
+
+
+--------------------------------
+7. CHARACTERS IN C
+--------------------------------
+
+Characters are stored as numbers (ASCII values)
+
+Example:
+'a' = 97
+'b' = 98
+
+So math works:
+
+'a' + 1 = 'b'
+
+Special characters:
+\n = newline
+\t = tab
+\0 = string terminator
+
+
+--------------------------------
+8. INTEGER TYPES (BASIC ONES TO KNOW)
+--------------------------------
+
+char     → small integer / letter
+int      → normal integer
+double   → decimal number
+
+Beginner rule:
+Use int unless you need decimals → then use double.
+
+
+--------------------------------
+9. TRUE / FALSE IN C
+--------------------------------
+
+C does not have a real boolean type.
+
+Instead:
+0 = false
+anything else = true (Usually use 1 as True.)
+
+Example:
+
+if (5) {
+    printf("Runs because 5 is true");
+}
+
+
+--------------------------------
+10. ASSIGNMENT VS COMPARISON
+--------------------------------
+
+=  means assign value
+== means compare values
+
+Example:
+
+x = 5;    ← assigns
+x == 5    ← checks
+
+
+--------------------------------
+11. COMMON C LOOP PATTERN
+--------------------------------
+
+while ((c = getchar()) != EOF)
+
+Meaning step-by-step:
+1. read character
+2. store in c
+3. check if EOF
+4. repeat if not EOF
+
+EOF = End Of File marker
+Value = -1
+
+This is why input variables are int, not char.
+
+
+--------------------------------
+12. FULL EXAMPLE PROGRAM
+--------------------------------
+
+Counts punctuation characters typed by user.
+
+--------------------------------
+
+#include <stdio.h>
+#include <ctype.h>
+
+int main(void)
+{
+    int total = 0;  // counts punctuation
+    int c;        // stores character read
+    
+    // loop until input ends
+    while ((c = getchar()) != EOF)
+    {
+        if (ispunct(c))    // ispunct() is a function that checks for actual punctuation.
+        {
+            total++;
+        }
+    }
+
+    printf("Total punctuation: %d\n", total);
+    return 0;
+}
+
+--------------------------------
+
+Program Logic:
+- read character
+- check punctuation
+- count it
+- stop at EOF
+- print result
+
+
+--------------------------------
+13. COMMON BEGINNER MISTAKES
+--------------------------------
+
+Mistake: forgetting ;
+Mistake: using = instead of ==
+Mistake: not including libraries
+Mistake: forgetting \0 in strings
+Mistake: using char instead of int for getchar()
+
+
+--------------------------------
+14. CORE MENTAL MODEL OF C
+--------------------------------
+
+C is a language where:
+
+You control memory
+You control safety
+You control everything
+
+Which means:
+Powerful + dangerous
+
+If something breaks:
+It is usually your fault (not the language).
+
+
+--------------------------------
+END OF NOTES
+--------------------------------

@@ -1,0 +1,711 @@
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+STRING FUNCTIONS (ARRAY vs POINTER VERSIONS)
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — STRCPY USING ARRAYS
+=====================================================
+
+Function:
+
+void strcpy_a(char to[], char from[])
+{
+    int idx = 0;
+
+    while (to[idx] = from[idx])
+    {
+        idx++;
+    }
+}
+
+What it does:
+Copies characters from "from" into "to".
+
+Key idea:
+
+Loop stops when '\0' is copied.
+
+Why?
+
+Assignment returns value copied.
+
+When '\0' copied → value = 0 → loop stops.
+
+
+
+=====================================================
+SECTION 2 — STRCPY USING POINTERS
+=====================================================
+
+void strcpy_p(char *to, char *from)
+{
+    while (*to++ = *from++)
+        ;
+}
+
+Same logic as array version but shorter.
+
+Break it down:
+
+*to++ = *from++
+
+Means:
+
+1) copy value from from pointer
+2) store into to pointer
+3) advance both pointers
+
+Loop stops when '\0' copied.
+
+
+
+IMPORTANT:
+Semicolon at end means:
+
+loop body is empty.
+
+Everything happens inside condition.
+
+
+
+=====================================================
+SECTION 3 — STRAPPEND (ARRAY VERSION)
+=====================================================
+
+void strappend_a(char to[], char from[])
+{
+    int idx = 0;
+
+    while (to[idx++])
+        ;
+
+    idx--;
+
+    while (to[idx] = from[idx])
+    {
+        idx++;
+    }
+}
+
+
+STEP 1:
+Find end of "to" string.
+
+Loop stops at '\0'.
+
+But idx advanced too far.
+
+So:
+
+    idx--
+
+moves back to NUL position.
+
+
+
+STEP 2:
+Copy "from" onto end.
+
+
+
+=====================================================
+SECTION 4 — STRAPPEND POINTER VERSION
+=====================================================
+
+void strappend_p(char *to, char *from)
+{
+    while (*to++)
+        ;
+
+    to--;
+
+    strcpy_p(to, from);
+}
+
+Explanation:
+
+Find end of "to"
+Back up to NUL
+Copy "from" there
+
+
+
+IMPORTANT WARNING FROM SLIDE
+=====================================================
+
+Two dangers:
+
+1) destination array must be large enough
+2) strings must be null-terminated
+
+Otherwise → memory corruption.
+
+
+
+=====================================================
+SECTION 5 — STRLEN ARRAY VERSION
+=====================================================
+
+int strlen_a(char s[])
+{
+    int idx = 0;
+
+    while (s[idx++])
+        ;
+
+    return idx - 1;
+}
+
+
+Why "-1"?
+
+Because loop increments AFTER reading '\0'.
+
+So idx ends one past end.
+
+
+
+=====================================================
+SECTION 6 — STRLEN POINTER VERSION
+=====================================================
+
+int strlen_p(char *s)
+{
+    char *sp = s;
+
+    while (*sp++)
+        ;
+
+    return (sp - s) - 1;
+}
+
+
+Explanation:
+
+sp walks forward through string.
+
+When loop ends:
+
+sp points AFTER null.
+
+sp - s gives number of steps moved.
+
+Subtract 1 because we passed null.
+
+
+
+=====================================================
+SECTION 7 — POINTER SUBTRACTION RULE
+=====================================================
+
+When subtracting pointers:
+
+    p2 - p1
+
+Result = number of elements between them
+
+NOT bytes.
+
+
+
+=====================================================
+SECTION 8 — WHY POINTER VERSIONS EXIST
+=====================================================
+
+Array version:
+- easier to read
+- clearer for beginners
+
+Pointer version:
+- shorter
+- faster
+- used in real C libraries
+
+
+
+=====================================================
+SECTION 9 — MASTER STRING FUNCTION TRUTH
+=====================================================
+
+All string functions follow same pattern:
+
+1) loop through characters
+2) stop at '\0'
+
+That’s it.
+
+strlen
+strcpy
+strcmp
+append
+scan
+
+ALL behave this way.
+
+
+
+=====================================================
+SECTION 10 — COMMON BEGINNER MISTAKES
+=====================================================
+
+Mistake 1
+Forgetting string must end with '\0'
+
+Mistake 2
+Forgetting destination must be large enough
+
+Mistake 3
+Misunderstanding *p++
+
+Remember:
+
+*p++ means
+
+    *(p++)
+
+NOT
+
+    (*p)++
+
+
+
+=====================================================
+SECTION 11 — MASTER MENTAL MODEL
+=====================================================
+
+If you understand this sentence,
+you understand all string functions:
+
+Strings are just pointers moving through memory
+until they hit '\0'.
+
+
+
+=====================================================
+END NOTES
+=====================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+STRING FUNCTIONS (ARRAY VS POINTER VERSIONS)
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — STRCPY (ARRAY VERSION)
+=====================================================
+
+Function:
+
+    void strcpy_a(char to[], char from[])
+    {
+        int idx = 0;
+        while (to[idx] = from[idx])
+        {
+            idx++;
+        }
+    }
+
+Source: :contentReference[oaicite:1]{index=1}
+
+
+----------------------------------------------
+WHAT THIS FUNCTION DOES
+----------------------------------------------
+
+Copies string from "from" into "to".
+
+Character by character.
+Stops when '\0' is copied.
+
+
+
+----------------------------------------------
+CRITICAL LINE
+----------------------------------------------
+
+    while (to[idx] = from[idx])
+
+This is NOT comparison.
+
+This is assignment.
+
+So what happens?
+
+Step-by-step:
+
+1) copy character
+2) assignment returns the value copied
+3) if value != 0 → loop continues
+4) if value == 0 (NUL) → loop stops
+
+
+Because:
+
+'\0' == 0 → false → loop exits
+
+So it copies INCLUDING the '\0'.
+
+
+
+----------------------------------------------
+WHY THIS IS CLEVER
+----------------------------------------------
+
+One line both:
+- copies
+- checks termination
+
+Very compact C style.
+
+
+
+=====================================================
+SECTION 2 — STRCPY (POINTER VERSION)
+=====================================================
+
+    void strcpy_p(char *to, char *from)
+    {
+        while (*to++ = *from++)
+            ;
+    }
+
+Source: :contentReference[oaicite:2]{index=2}
+
+
+----------------------------------------------
+BREAK THIS DOWN CAREFULLY
+----------------------------------------------
+
+Inside while:
+
+    *to++ = *from++
+
+Break order:
+
+1) *from → get value
+2) assign into *to
+3) increment both pointers
+4) assignment returns copied value
+5) if value != 0 → continue
+
+
+----------------------------------------------
+Equivalent long version
+----------------------------------------------
+
+    while (1)
+    {
+        *to = *from;
+
+        if (*from == '\0')
+            break;
+
+        to++;
+        from++;
+    }
+
+Compact version just removes extra lines.
+
+
+
+=====================================================
+SECTION 3 — STRAPPEND (ARRAY VERSION)
+=====================================================
+
+Goal:
+Append "from" onto end of "to"
+
+    void strappend_a(char to[], char from[])
+    {
+        int idx = 0;
+
+        while (to[idx++])
+            ;
+
+        idx--;
+
+        while (to[idx] = from[idx])
+        {
+            idx++;
+        }
+    }
+
+Source: :contentReference[oaicite:3]{index=3}
+
+
+----------------------------------------------
+WHY idx-- IS NEEDED
+----------------------------------------------
+
+Look at first loop:
+
+    while (to[idx++])
+
+Important:
+
+Post-increment.
+
+Meaning:
+
+1) check to[idx]
+2) THEN idx++
+
+So when loop exits,
+idx is already one position PAST '\0'.
+
+So we subtract 1 to go back to NUL position.
+
+That’s why:
+
+    idx--;
+
+
+
+----------------------------------------------
+SECOND LOOP
+----------------------------------------------
+
+Now we copy from[] starting at that NUL position.
+
+But this version is slightly flawed:
+It assumes both arrays align indices.
+
+Better version uses separate index for from[].
+
+
+
+=====================================================
+SECTION 4 — STRAPPEND (POINTER VERSION)
+=====================================================
+
+    void strappend_p(char *to, char *from)
+    {
+        while (*to++)
+            ;
+
+        to--;
+
+        strcpy_p(to, from);
+    }
+
+Source: :contentReference[oaicite:4]{index=4}
+
+
+----------------------------------------------
+WHY to-- ?
+----------------------------------------------
+
+Same reason as idx-- earlier.
+
+Because:
+
+while (*to++)
+
+Stops AFTER passing the '\0'.
+
+So we move pointer back one position.
+
+
+
+=====================================================
+SECTION 5 — STRLEN (ARRAY VERSION)
+=====================================================
+
+    int strlen_a(char s[])
+    {
+        int idx = 0;
+
+        while (s[idx++])
+            ;
+
+        return idx - 1;
+    }
+
+Source: :contentReference[oaicite:5]{index=5}
+
+
+----------------------------------------------
+WHY idx - 1 ?
+----------------------------------------------
+
+Because:
+
+Loop exits AFTER reading '\0'.
+
+So idx is one past real characters.
+
+Example:
+
+"Hi"
+
+Memory:
+H i \0
+
+Trace:
+
+idx=0 → check H → idx=1
+idx=1 → check i → idx=2
+idx=2 → check \0 → idx=3 (after increment)
+
+So idx = 3
+
+But real length = 2
+
+So return idx - 1
+
+
+
+=====================================================
+SECTION 6 — STRLEN (POINTER VERSION)
+=====================================================
+
+    int strlen_p(char *s)
+    {
+        char *sp = s;
+
+        while (*sp++)
+            ;
+
+        return (sp - s) - 1;
+    }
+
+Source: :contentReference[oaicite:6]{index=6}
+
+
+----------------------------------------------
+IMPORTANT POINTER MATH
+----------------------------------------------
+
+sp - s
+
+Subtracting two pointers gives:
+
+Number of elements between them.
+
+So:
+
+If sp moved 3 positions forward,
+
+sp - s == 3
+
+Then subtract 1 to remove '\0' count.
+
+
+
+=====================================================
+SECTION 7 — DANGER SIGNS (VERY IMPORTANT)
+=====================================================
+
+From slide: :contentReference[oaicite:7]{index=7}
+
+1) Null termination
+2) Size of destination array
+
+C does NOT check if "to" has enough space.
+
+So:
+
+strcpy(to, from)
+
+Can overflow memory.
+
+This is one of the most common real-world security bugs.
+
+
+
+=====================================================
+SECTION 8 — MASTER PATTERN YOU MUST UNDERSTAND
+=====================================================
+
+This pattern appears everywhere:
+
+    while (*p++)
+        ;
+
+Meaning:
+
+Move pointer until NUL found.
+
+And:
+
+    while (*to++ = *from++)
+        ;
+
+Meaning:
+
+Copy until NUL copied.
+
+
+
+=====================================================
+SECTION 9 — CORE UNDERSTANDING
+=====================================================
+
+All string functions boil down to:
+
+1) move pointer
+2) copy character
+3) stop at '\0'
+
+That’s it.
+
+Everything else is just syntax style.
+
+
+
+=====================================================
+FINAL SUMMARY
+=====================================================
+
+Array version:
+Uses index numbers.
+
+Pointer version:
+Uses address movement.
+
+They are logically identical.
+
+But pointer version is shorter and more "C-style".
+
+Understanding these patterns means:
+You now understand how C strings really work internally.

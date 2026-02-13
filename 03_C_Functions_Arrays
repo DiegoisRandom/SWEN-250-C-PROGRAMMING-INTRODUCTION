@@ -1,0 +1,434 @@
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+FUNCTIONS + ARRAYS
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — HOW FUNCTIONS WORK IN C
+=====================================================
+
+Functions in C are very similar to Java methods, but simpler.
+
+They do NOT have:
+- public
+- private
+- class
+- object
+
+A C function is simply:
+    a block of code with a name
+
+
+Example function:
+
+    int add(int a, int b)
+    {
+        return a + b;
+    }
+
+This means:
+- name = add
+- parameters = a, b
+- return type = int
+
+
+
+-----------------------------------------------------
+IMPORTANT RULE — ARGUMENTS ARE PASSED BY VALUE
+-----------------------------------------------------
+
+This means:
+
+When you pass a variable into a function,
+the function receives a COPY.
+
+It does NOT receive the original variable.
+
+Example from slides:
+
+    void try_swap(int x, int y)
+    {
+        int t = x;
+        x = y;
+        y = t;
+    }
+
+Why this DOES NOT swap values:
+
+Because:
+
+    x and y are COPIES
+
+Original variables stay unchanged. 
+
+
+Mental Model:
+
+Caller sends function a PHOTOCOPY of variables.
+
+Function edits copy.
+
+Original paper stays unchanged.
+
+
+
+=====================================================
+SECTION 2 — FUNCTIONS MUST BE DECLARED BEFORE USE
+=====================================================
+
+C requires functions to be known before calling them.
+
+This is called a DECLARATION.
+
+Declaration tells compiler:
+- function name
+- return type
+- parameter types
+
+Example declaration:
+
+    int min(int, int);
+
+Important:
+Parameter names are optional in declaration.
+Only types matter. 
+
+
+Why this rule exists:
+
+Compiler reads code top → bottom.
+
+If it sees a function call before knowing what it is,
+it gets confused.
+
+So we declare it first.
+
+
+-----------------------------------------------------
+Example with declaration + definition
+-----------------------------------------------------
+
+    extern int min(int x, int y);
+    static int max(int x, int y);
+
+    int max_div_min(int x, int y)
+    {
+        return max(x,y) / min(x,y);
+    }
+
+    int min(int x, int y)
+    {
+        return (x <= y) ? x : y;
+    }
+
+    static int max(int x, int y)
+    {
+        return (x >= y) ? x : y;
+    }
+
+
+Explanation:
+
+extern → function defined somewhere else (possibly this file)
+
+static → function only visible inside this file 
+
+
+Mental Model:
+
+extern = public function
+static = private function
+
+
+
+=====================================================
+SECTION 3 — VARIABLE SCOPE
+=====================================================
+
+Variables created inside a function exist ONLY inside that function.
+
+They are called:
+LOCAL VARIABLES 
+
+
+Example from slides simplified:
+
+    int main()
+    {
+        int min = 0;
+        int val1 = 9;
+        int val2 = 20;
+
+        min = min(val1,val2);
+    }
+
+This is confusing but important:
+
+There are TWO things named "min":
+
+1) variable named min
+2) function named min
+
+These are completely different. 
+
+
+Mental Rule:
+
+Variable names only exist inside their scope.
+
+Same name can exist in different scopes safely.
+
+
+
+=====================================================
+SECTION 4 — ARRAYS BASICS
+=====================================================
+
+Array syntax:
+
+    type name[size];
+
+Example:
+
+    int numbers[100];
+
+This creates:
+
+100 integer slots in memory. 
+
+
+-----------------------------------------------------
+INDEXING RULE
+-----------------------------------------------------
+
+Indexes always start at 0.
+
+If size = 100
+
+Valid indices:
+0 → 99 
+
+Remember: one slot is reserved for '/0' because it marks the end of array.
+
+-----------------------------------------------------
+IMPORTANT DANGER
+-----------------------------------------------------
+
+C DOES NOT CHECK ARRAY BOUNDS.
+
+You can write:
+
+    numbers[500] = 10;
+
+And C will allow it.
+
+But you will overwrite random memory.
+
+This is one of the biggest sources of bugs. 
+
+
+
+=====================================================
+SECTION 5 — SYMBOLIC CONSTANTS FOR ARRAY SIZE
+=====================================================
+
+Instead of:
+
+    int arr[100];
+
+Use:
+
+    #define SIZE (100)
+    int arr[SIZE];
+
+Why?
+
+Because later if size changes,
+you only update one place.
+
+This is safer and cleaner. 
+
+
+
+=====================================================
+SECTION 6 — LOOPING THROUGH ARRAYS
+=====================================================
+
+Example from slides rewritten cleanly:
+
+    int sum = 0;
+    int i;
+
+    for (i = 0; i < MAX_SAMPLES; i++)
+    {
+        sum += samples[i];
+    }
+
+What this does:
+
+Adds all values in array.
+
+Logic:
+
+start at first element
+keep going until last element
+add each value to sum
+
+
+
+=====================================================
+SECTION 7 — 2D ARRAYS (MATRICES)
+=====================================================
+
+Declaration:
+
+    double matrix[50][50];
+
+This means:
+
+50 rows
+50 columns
+
+Access element:
+
+    matrix[i][j]
+
+
+Memory visualization:
+
+row0: [ ][ ][ ]
+row1: [ ][ ][ ]
+row2: [ ][ ][ ]
+
+
+
+=====================================================
+SECTION 8 — MATRIX MULTIPLICATION EXAMPLE
+=====================================================
+
+Nested loops example:
+
+    for (i=0; i<D; i++)
+        for (j=0; j<D; j++)
+            for (k=0; k<D; k++)
+                product[i][j] += m1[i][k] * m2[k][j];
+
+Logic:
+
+i = row
+j = column
+k = traversal index
+
+Inner loop computes ONE cell.
+
+Outer loops repeat for every cell.
+
+
+
+=====================================================
+SECTION 9 — ARRAYS PASSED INTO FUNCTIONS
+=====================================================
+
+Normal variables → passed by value
+Arrays → passed by reference 
+
+
+Meaning:
+
+Function receives access to original array.
+
+So if function changes array values:
+
+Original array changes too.
+
+
+
+-----------------------------------------------------
+Example function
+-----------------------------------------------------
+
+    void acopy(int to[], int from[], int size)
+    {
+        int i;
+        for (i=0; i<size; i++)
+        {
+            to[i] = from[i];
+        }
+    }
+
+This copies one array into another. 
+
+
+
+=====================================================
+SECTION 10 — WHY ARRAYS ARE PASSED BY REFERENCE
+=====================================================
+
+Because arrays are actually pointers internally.
+
+When you pass:
+
+    array
+
+you are really passing:
+
+    address of first element
+
+So function sees same memory.
+
+
+
+=====================================================
+SECTION 11 — IMPORTANT ARRAY RULES SUMMARY
+=====================================================
+
+1) Array size fixed when created 
+2) Indexes start at 0 
+3) Last index = size - 1 
+4) C does NOT prevent out-of-bounds access 
+5) Arrays passed by reference 
+
+
+
+=====================================================
+SECTION 12 — COMMON BEGINNER ERRORS
+=====================================================
+
+Error 1 — expecting swap function to work
+Reason → arguments passed by value
+
+Error 2 — going outside array bounds
+Reason → C does not check indexes
+
+Error 3 — forgetting array size
+Reason → memory overwrite
+
+Error 4 — confusing variable scope
+Reason → same name in different functions
+
+
+
+=====================================================
+SECTION 13 — CORE CONCEPT SUMMARY
+=====================================================
+
+Functions:
+- must be declared before use
+- receive copies of arguments
+- local variables stay inside function
+
+Arrays:
+- fixed size
+- start at index 0
+- no bounds checking
+- passed by reference
+
+Understanding these ideas is REQUIRED before pointers.
+
+
+
+=====================================================
+END NOTES
+=====================================================

@@ -1,0 +1,419 @@
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+STRINGS + COMMAND LINE ARGUMENTS
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — WHAT A STRING REALLY IS IN C
+=====================================================
+
+Definition:
+A string in C is NOT a special type.
+
+It is simply:
+
+    an array of characters
+
+Example:
+
+    char word[] = "Hello";
+
+This is an array of 8-bit bytes holding ASCII characters.
+
+
+Memory actually stores this as:
+
+    H   e   l   l   o   \0
+
+IMPORTANT:
+
+C automatically adds a special character at the end:
+
+    '\0'  ← null terminator
+
+This marks the END of the string.
+
+Without this character:
+The computer would keep reading memory forever until it randomly finds 0.
+
+So:
+
+    Strings in C always need 1 extra space.
+
+
+=====================================================
+SECTION 2 — WHY +1 SPACE IS REQUIRED
+=====================================================
+
+If you want to store 80 characters:
+
+You must allocate:
+
+    81 spaces
+
+Example:
+
+    #define MAXLINE (80)
+    char line[MAXLINE + 1];
+
+Why?
+
+Because:
+
+    80 letters + '\0'
+
+If you forget this:
+
+Your string will overflow memory and corrupt data.
+
+
+
+=====================================================
+SECTION 3 — READING A STRING FROM INPUT
+=====================================================
+
+Function from slides rewritten cleanly:
+
+-----------------------------------------------------
+
+void readline(char line[], int maxsize)
+{
+    int i = 0;
+    int ch;
+
+    for (ch = getchar();
+         ch != '\n' && ch != EOF;
+         ch = getchar())
+    {
+        if (i < maxsize)
+        {
+            line[i++] = ch;
+        }
+    }
+
+    line[i] = '\0';
+}
+
+-----------------------------------------------------
+
+STEP-BY-STEP LOGIC
+
+What this function does:
+Reads characters one at a time and stores them into a string.
+
+Detailed breakdown:
+
+int i = 0;
+→ keeps track of position inside array
+
+int ch;
+→ stores character read from keyboard
+
+FOR LOOP:
+reads characters UNTIL:
+- user presses ENTER
+- OR input ends (EOF)
+
+if (i < maxsize)
+→ prevents overflow
+
+line[i++] = ch;
+→ store character in index.
+→ THEN move index forward
+
+same code as:
+line[i] = ch;
+i= i + 1;
+
+line[i] = '\0';
+→ mark end of string
+
+IMPORTANT IDEA:
+Computer does NOT know where a string ends.
+You must tell it.
+
+
+
+=====================================================
+SECTION 4 — COPYING STRINGS MANUALLY
+=====================================================
+
+Function:
+
+Copying one string to another.
+-----------------------------------------------------
+
+void strcpy(char dest[], char src[])
+{
+    int i;
+
+    for (i = 0; dest[i] = src[i]; ++i)
+        ;
+}
+
+-----------------------------------------------------
+
+This looks weird but is VERY important.
+
+The loop condition:
+
+    dest[i] = src[i]
+
+does TWO things:
+1) copies character
+2) checks if it is '\0'
+
+Why it works:
+
+Assignment returns value assigned.
+
+So when '\0' is copied:
+
+    dest[i] = '\0'
+
+→ value = 0 → false → loop stops
+
+So loop stops exactly at end of string.
+
+
+
+=====================================================
+SECTION 5 — BUILT-IN STRING FUNCTIONS
+=====================================================
+
+Library:
+    #include <string.h>
+
+
+strlen(string)
+Returns length WITHOUT counting '\0'
+
+Example:
+strlen("Hello") = 5
+
+
+strcpy(dest, src)
+Copies string.
+
+
+strncpy(dest, src, n)
+Copies only first n characters.
+
+WARNING:
+If source is longer than n:
+destination will NOT be null-terminated.
+
+This is a common beginner bug.
+
+
+strcmp(str1, str2)
+Compares strings alphabetically.
+
+Returns:
+-1 → str1 < str2
+ 0 → equal
+ 1 → str1 > str2
+
+Think dictionary order.
+
+
+
+=====================================================
+SECTION 6 — MAIN FUNCTION WITH ARGUMENTS
+=====================================================
+
+Full main declaration:
+
+    int main(int argc, char **argv)
+
+This version lets your program read arguments from command line.
+
+
+
+=====================================================
+SECTION 7 — WHAT argc IS
+=====================================================
+
+argc = argument count
+
+It tells how many things were typed after program name.
+
+Important rule:
+
+argc is ALWAYS at least 1
+
+because:
+
+argv[0] = program name
+
+
+
+Example command:
+
+    gcc -o prog file.c
+
+argc would be 4:
+
+index | value
+------|---------
+0     | gcc
+1     | -o
+2     | prog
+3     | file.c
+
+
+
+=====================================================
+SECTION 8 — WHAT argv IS
+=====================================================
+
+argv = argument vector
+
+It is basically:
+
+    array of strings
+
+You can think of it like:
+
+    char *argv[]
+
+So:
+
+argv[i] → whole argument string
+argv[i][j] → character inside argument
+
+
+
+Example:
+
+Command typed:
+
+    ./program cat dog
+
+Memory:
+
+argv[0] = "./program"
+argv[1] = "cat"
+argv[2] = "dog"
+
+
+
+=====================================================
+SECTION 9 — COMPLETE ARGUMENT PROGRAM EXAMPLE
+=====================================================
+
+Clean rewritten version:
+
+-----------------------------------------------------
+
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char **argv)
+{
+    int i;
+
+    printf("Program name = %s\n", argv[0]);
+
+    for (i = 1; i < argc; i++)
+    {
+        printf("argv[%d] = %s ", i, argv[i]);
+        printf("length = %d\n", strlen(argv[i]));
+    }
+
+    return 0;
+}
+
+-----------------------------------------------------
+
+LOGIC FLOW
+
+Program prints:
+- program name
+- every argument
+- length of each argument
+
+Execution example:
+
+Command:
+
+    ./test apple banana
+
+Output:
+
+Program name = ./test
+argv[1] = apple length = 5
+argv[2] = banana length = 6
+
+
+
+=====================================================
+SECTION 10 — HOW THE COMPUTER THINKS ABOUT ARGUMENTS
+=====================================================
+
+Command line input is just text.
+
+Your OS splits it by spaces and gives it to your program as:
+
+argc count
+argv array
+
+So arguments are NOT magic.
+They are simply:
+
+strings passed into main()
+
+
+
+=====================================================
+SECTION 11 — COMMON BEGINNER STRING MISTAKES
+=====================================================
+
+Mistake 1 — forgetting '\0'
+Result → random characters print
+
+Mistake 2 — array too small
+Result → memory corruption
+
+Mistake 3 — using == to compare strings
+WRONG:
+
+    if (str1 == str2)
+
+RIGHT:
+
+    if (strcmp(str1,str2)==0)
+
+    strcmp returns 0 when strings match.
+
+Because:
+
+== compares addresses
+strcmp compares content
+
+
+Mistake 4 — forgetting bounds check
+Always check array limits.
+
+
+=====================================================
+SECTION 12 — CORE CONCEPT SUMMARY
+=====================================================
+
+If you understand these, you understand strings in C:
+
+1) A string is just a char array.
+2) Strings must end with '\0'.
+3) Arrays must include extra space for '\0'.
+4) Strings are copied character-by-character.
+5) argv is just an array of strings.
+6) argc counts arguments.
+7) strcmp compares strings, not ==.
+
+
+
+=====================================================
+END OF FILE
+=====================================================

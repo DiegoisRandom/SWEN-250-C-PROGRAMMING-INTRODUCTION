@@ -1,0 +1,409 @@
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+POINTERS + MEMORY
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — WHAT COMPUTER MEMORY REALLY IS
+=====================================================
+
+Memory is basically:
+
+    a giant array of bytes
+
+Each byte = 8 bits. 
+
+You can imagine memory like:
+
+    memory[0]
+    memory[1]
+    memory[2]
+    memory[3]
+    ...
+
+Each location has:
+- address
+- stored value
+
+So memory behaves like:
+
+    memory[address] = value
+
+Addresses normally start at 0 and go up. 
+
+
+
+=====================================================
+SECTION 2 — HOW MANY VALUES FIT IN A BYTE?
+=====================================================
+
+1 byte = 8 bits
+
+Possible combinations:
+
+    2^8 = 256 values
+
+Larger data types combine bytes:
+
+short → 16 bits
+int → 32 bits
+long → 64 bits
+
+
+
+=====================================================
+SECTION 3 — NUMBERS CAN MEAN DIFFERENT THINGS
+=====================================================
+
+Example value:
+
+    0x4A6F65
+
+This could be: 
+
+- number
+- string
+- memory address
+- machine instruction
+
+Computers don’t know meaning.
+
+Meaning depends on how you use it.
+
+
+
+Mental model:
+
+Numbers are shape-shifters.
+
+
+
+=====================================================
+SECTION 4 — WHY THIS IS POWERFUL AND DANGEROUS
+=====================================================
+
+Because C lets you treat numbers as:
+
+- addresses
+- data
+- instructions
+
+If used wrong:
+- runtime errors
+- corrupted memory
+- weird output 
+
+That’s why pointers are powerful but dangerous.
+
+
+
+=====================================================
+SECTION 5 — WHAT A POINTER IS
+=====================================================
+
+Two declarations:
+
+    int i;
+    int *ip;
+
+Difference:
+
+i → stores integer value
+ip → stores address of an integer
+
+Important:
+
+    * means pointer variable
+
+It attaches to variable, not type. 
+
+So:
+
+    int* p1, p2;
+
+means:
+
+    p1 = pointer
+    p2 = normal int
+
+Correct way:
+
+    int *p1, *p2;
+
+
+
+=====================================================
+SECTION 6 — POINTER MEMORY LOGIC
+=====================================================
+
+Variables:
+
+    double x = 3.14159;
+    double y = 2.71828;
+    double *dp;
+
+Memory table (like slide diagram):
+
+Name   Address   Value
+x      108       3.14
+y      116       2.71
+dp     124       ?
+
+
+
+-----------------------------------------------------
+ASSIGN POINTER
+-----------------------------------------------------
+
+    dp = &x;
+
+& means "address of" 
+
+Now dp stores:
+
+    108
+
+So dp points to x.
+
+
+
+=====================================================
+SECTION 7 — DEREFERENCING
+=====================================================
+
+Operator:
+
+    *
+
+means:
+
+    value at address
+
+Example:
+
+    *dp
+
+means:
+
+    value stored where dp points
+
+From slides:
+
+    x = *dp * 2.0;
+
+means:
+
+    x = x * 2.0 
+
+
+
+=====================================================
+SECTION 8 — POINTER REDIRECTION
+=====================================================
+
+You can change what pointer points to:
+
+    dp = &y;
+
+Now dp points to y instead of x. 
+
+
+
+=====================================================
+SECTION 9 — MODIFYING VALUE THROUGH POINTER
+=====================================================
+
+Example:
+
+    *dp += x;
+
+Means:
+
+    value pointed to by dp += x
+
+If dp points to y:
+
+    y += x
+
+Result shown in slide:
+
+y becomes updated value.
+
+
+
+=====================================================
+SECTION 10 — ADDRESS OPERATOR (&)
+=====================================================
+
+    &variable
+
+means:
+
+    memory address of variable
+
+Example:
+
+    int a = 5;
+    int *p = &a;
+
+p stores location of a.
+
+
+
+=====================================================
+SECTION 11 — DEREFERENCE OPERATOR (*)
+=====================================================
+
+    *pointer
+
+means:
+
+    value stored at that memory address
+
+Example:
+
+    *p = 10;
+
+changes a to 10.
+
+
+
+=====================================================
+SECTION 12 — PASS BY REFERENCE USING POINTERS
+=====================================================
+
+Normal function:
+
+    void swap(int x, int y)
+
+Does not swap values.
+
+Why?
+
+Copies are passed.
+
+
+
+Correct version using pointers:
+
+    void swap(int *x, int *y)
+    {
+        int temp = *x;
+        *x = *y;
+        *y = temp;
+    }
+
+Call:
+
+    swap(&a, &b);
+
+Explanation: 
+
+We pass addresses instead of values.
+
+Function modifies original variables.
+
+
+
+=====================================================
+SECTION 13 — ARRAY + POINTER RELATIONSHIP
+=====================================================
+
+Array element swap:
+
+WRONG:
+
+    swap(arr[i], arr[j]);
+
+RIGHT:
+
+    swap(&arr[i], &arr[j]);
+
+Because swap needs addresses.
+
+
+
+=====================================================
+SECTION 14 — CORE POINTER RULES
+=====================================================
+
+1) pointer stores address
+2) & gets address
+3) * accesses value
+4) pointer type must match data type
+5) pointer can change where it points
+6) dereferencing changes real memory
+
+
+
+=====================================================
+SECTION 15 — VISUAL POINTER MODEL
+=====================================================
+
+Normal variable:
+
+    a = 5
+
+Pointer:
+
+    p = address of a
+
+Diagram:
+
+p ---> a ---> 5
+
+*p accesses value 5
+
+
+
+=====================================================
+SECTION 16 — COMMON POINTER MISTAKES
+=====================================================
+
+Mistake 1 — using pointer before assigning address
+
+    int *p;
+    *p = 5;  ← crash
+
+Mistake 2 — forgetting & when passing
+
+Mistake 3 — dereferencing wrong type
+
+Mistake 4 — confusing pointer with value
+
+Pointer stores address, not data.
+
+
+
+=====================================================
+SECTION 17 — MASTER POINTER UNDERSTANDING
+=====================================================
+
+If you understand this sentence,
+you understand pointers:
+
+A pointer is a variable that stores the memory location of another variable.
+
+
+
+=====================================================
+FINAL SUMMARY
+=====================================================
+
+Memory = array of bytes
+Pointer = address holder
+& = address-of operator
+* = value-at-address operator
+
+Pointers allow you to:
+- modify variables indirectly
+- share data between functions
+- work with arrays efficiently
+- control memory manually
+
+
+=====================================================
+END NOTES
+=====================================================

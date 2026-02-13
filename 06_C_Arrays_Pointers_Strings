@@ -1,0 +1,375 @@
+=====================================================
+SWEN 250 — C PROGRAMMING NOTES
+ARRAYS + POINTERS + STRINGS
+=====================================================
+
+
+
+=====================================================
+SECTION 1 — WHAT AN ARRAY NAME REALLY IS
+=====================================================
+
+Example:
+
+    char message[] = "Hello";
+
+Memory looks like:
+
+    H  e  l  l  o  \0
+
+Important concept:
+
+    message is NOT the array.
+
+message is a pointer to the first element. 
+
+Specifically:
+
+    message == &message[0]
+
+Meaning:
+message stores address of first character.
+
+Also:
+
+Array name is a CONSTANT pointer. 
+
+So you CANNOT do:
+
+    message = something_else;   ❌
+
+
+
+=====================================================
+SECTION 2 — DEREFERENCING ARRAY NAME
+=====================================================
+
+Expression:
+
+    *message
+
+means:
+
+    value at address message
+
+Since message points to first character:
+
+    *message == 'H' 
+
+
+
+=====================================================
+SECTION 3 — ARRAY INDEX VS POINTER MATH
+=====================================================
+
+These are equivalent:
+
+    message[4]
+    *(message + 4)
+
+Both access 5th character. 
+
+Why?
+
+Because arrays internally use pointer arithmetic.
+
+
+
+=====================================================
+SECTION 4 — POINTER ARITHMETIC RULE
+=====================================================
+
+Adding number to pointer:
+
+    pointer + n
+
+moves pointer forward n elements.
+
+NOT n bytes — n elements.
+
+Example:
+
+    int *p;
+    p + 1 → moves forward sizeof(int)
+
+
+
+=====================================================
+SECTION 5 — POINTER STRING VS ARRAY STRING
+=====================================================
+
+These two look similar but behave differently:
+
+
+--------------------------
+Pointer string
+--------------------------
+
+    char *hi = "Hello";
+
+Creates:
+- constant string stored somewhere
+- pointer hi points to it 
+
+You should NOT modify it.
+
+
+--------------------------
+Array string
+--------------------------
+
+    char message[] = "Hello";
+
+Creates:
+- actual array
+- characters copied into array 
+
+You CAN modify characters.
+
+
+
+=====================================================
+SECTION 6 — POINTER TO ARRAY
+=====================================================
+
+Example:
+
+    char *p_mesg = message;
+
+This means:
+
+p_mesg points to first element of array. 
+
+
+
+=====================================================
+SECTION 7 — POINTER MOVEMENT
+=====================================================
+
+Code:
+
+    p_mesg++;
+    ch = *p_mesg;
+
+Step-by-step:
+
+1) move pointer forward
+2) read character
+
+So if message = "Greetings"
+
+After increment:
+
+    pointer points to 'r'
+
+So:
+
+    ch = 'r' 
+
+
+
+=====================================================
+SECTION 8 — POINTERS CAN BE INDEXED
+=====================================================
+
+Example:
+
+    char *hi = "Hello";
+    char ch = hi[1];
+
+Result:
+
+    ch = 'e' 
+
+Why?
+
+Because indexing is just pointer math:
+
+    hi[1] == *(hi + 1)
+
+
+
+=====================================================
+SECTION 9 — POST VS PRE INCREMENT WITH POINTERS
+=====================================================
+
+Code:
+
+    ch1 = *hp++;
+
+This means:
+
+    ch1 = *hp
+    hp++
+
+So:
+
+use pointer first
+move pointer after 
+
+
+
+Now compare:
+
+    ch2 = *++hp;
+
+This means:
+
+    hp++
+    ch2 = *hp
+
+Move first, use second. 
+
+
+
+=====================================================
+SECTION 10 — STRING LOOP IDIOM
+=====================================================
+
+Classic C pattern:
+
+    while (ch = *p++)
+    {
+        // process character
+    }
+
+This loops until:
+
+    '\0'
+
+Why?
+
+Because '\0' = 0 → false → loop stops. 
+
+
+
+Equivalent clearer version:
+
+    while (*p != '\0')
+
+
+
+=====================================================
+SECTION 11 — TESTING CHARACTER EXISTENCE
+=====================================================
+
+Example:
+
+    if (*p)
+
+means:
+
+    if character is NOT '\0'
+
+Because:
+
+    '\0' == 0 → false 
+
+
+Clearer version:
+
+    if (*p != '\0')
+
+
+
+=====================================================
+SECTION 12 — MASTER CONNECTION
+=====================================================
+
+The most important realization:
+
+Arrays and pointers are deeply related.
+
+In most expressions:
+
+    array name behaves like pointer.
+
+But they are NOT identical:
+
+Array name:
+- constant pointer
+- cannot change address
+
+Pointer variable:
+- can change address
+
+
+
+=====================================================
+SECTION 13 — VISUAL MODEL
+=====================================================
+
+Array:
+
+message
+   ↓
+'H' 'e' 'l' 'l' 'o' '\0'
+
+Pointer:
+
+p_mesg
+   ↓
+'H' 'e' 'l' 'l' 'o' '\0'
+
+Difference:
+
+p_mesg can move
+message cannot.
+
+
+
+=====================================================
+SECTION 14 — COMMON BEGINNER ERRORS
+=====================================================
+
+Mistake 1
+Trying to reassign array name
+
+    message = something  ❌
+
+
+Mistake 2
+Forgetting null terminator when looping
+
+Mistake 3
+Confusing pointer increment with value increment
+
+    p++   moves pointer
+    (*p)++ increments value
+
+
+Mistake 4
+Mixing pointer string and array string
+
+
+
+=====================================================
+SECTION 15 — GOLDEN RULE SUMMARY
+=====================================================
+
+Memorize these:
+
+1) array name = address of first element
+2) arr[i] == *(arr+i)
+3) pointer + n moves n elements
+4) *p gives value
+5) p gives address
+6) '\0' ends strings
+
+
+
+=====================================================
+FINAL CORE UNDERSTANDING
+=====================================================
+
+If you understand this sentence,
+you understand this entire lecture:
+
+An array is a fixed pointer to its first element,
+while a pointer is a movable reference to memory.
+
+
+
+=====================================================
+END NOTES
+=====================================================
