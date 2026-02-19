@@ -1,0 +1,194 @@
+=====================================================
+SWEN 250 — MAKEFILE NOTES
+Understanding Makefile Rules
+=====================================================
+
+
+-----------------------------------------------------
+GENERAL MAKEFILE RULE FORMAT
+-----------------------------------------------------
+
+target: dependencies
+<TAB>command
+
+
+Meaning:
+
+target
+= thing we want to build
+
+dependencies
+= files target depends on
+
+command
+= instruction to build target
+
+
+Make will rebuild the target ONLY if:
+- target does not exist
+OR
+- a dependency changed
+
+
+
+=====================================================
+EXAMPLE RULE 1
+=====================================================
+
+test: csv.c unit_tests.c
+    gcc -g -Wall csv.c unit_tests.c -o test
+
+
+
+LINE-BY-LINE EXPLANATION
+
+test:
+Target name.
+This is the executable file we want to create.
+
+
+csv.c unit_tests.c
+Dependencies.
+If either file changes → rebuild test.
+
+
+gcc
+The compiler program used to compile C code.
+
+
+-g
+Include debugging information.
+
+
+-Wall
+Turn on all compiler warnings.
+
+
+csv.c unit_tests.c
+Source files to compile.
+
+
+-o test
+Output file name will be "test".
+
+
+
+-----------------------------------------------------
+WHAT HAPPENS WHEN YOU TYPE
+-----------------------------------------------------
+
+make test
+
+
+Make checks:
+Does file "test" exist?
+
+If no → build it.
+
+If yes → check timestamps:
+If csv.c or unit_tests.c is newer → rebuild.
+
+
+
+=====================================================
+EXAMPLE RULE 2
+=====================================================
+
+csv: csv.c unit_tests.c
+    gcc -g -Wall csv.c unit_tests.c -o csv
+
+
+
+Difference from previous rule:
+
+Only the output name changed:
+
+-o csv
+
+So this builds a different executable.
+
+
+
+=====================================================
+WHAT HAPPENS WHEN YOU TYPE JUST "make"
+=====================================================
+
+Make runs the FIRST rule in the file.
+
+So if the file starts with:
+
+test: ...
+
+Then
+
+make
+
+is the same as:
+
+make test
+
+
+
+=====================================================
+WHY TWO TARGETS EXIST
+=====================================================
+
+test executable
+= runs unit tests
+
+
+csv executable
+= runs real program
+
+
+
+=====================================================
+REAL PROGRAMMER MENTAL MODEL
+=====================================================
+
+Makefile = automatic build robot
+
+You tell it:
+
+WHAT files exist
+HOW to build them
+WHEN to rebuild them
+
+Make decides whether to compile.
+
+
+
+=====================================================
+IMPORTANT MAKEFILE RULES
+=====================================================
+
+Rule 1
+Commands MUST start with a TAB
+(not spaces)
+
+Rule 2
+Target names must match filenames you want created.
+
+Rule 3
+Dependencies must list all files used to build target.
+
+Rule 4
+Make only rebuilds when needed.
+
+
+
+=====================================================
+CORE CONCEPT SUMMARY
+=====================================================
+
+If you understand this sentence,
+you understand Makefiles:
+
+A Makefile tells the computer how to build files
+and when they need rebuilding.
+
+
+
+=====================================================
+END NOTES
+=====================================================

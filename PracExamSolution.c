@@ -10,6 +10,7 @@ int fix_bad_code( int first, int second )
 
         return value;
 }
+
 int skip_spaces( char mystring[], int start_index )
 {
         int result =-1 ;
